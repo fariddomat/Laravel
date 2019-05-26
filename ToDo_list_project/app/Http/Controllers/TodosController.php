@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Todo;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\ServiceProvider;
+
+class TodosController extends Controller
+{
+    public function index()
+    {
+        $todos=Todo::all();
+        
+        return view('todos',compact('todos'));
+    }
+
+    public function store(Request $request)
+    {
+        $todo=new Todo;
+        $todo->todo= $request->todo;
+        $todo->save();
+
+        Session::flash('success','your todo was created');
+
+        return redirect()->back();
+    }
+    public function delete($id)
+    {
+        $todo=Todo::find($id);
+        $todo->delete();
+        
+        Session::flash('success','your todo was deleted');
+
+        return redirect()->back();
+    }
+
+    public function update($id)
+    {
+        $todo=Todo::find($id);
+        
+        return view('update',compact('todo'));
+        
+    }
+
+    public function save(Request $request,$id)
+    {
+        $todo=Todo::find($id);
+        $todo->todo=$request->todo;
+        $todo->save();
+        
+        Session::flash('success','your todo was updated');
+
+        return redirect('/todos');
+        
+    }
+    public function completed(Request $request,$id)
+    {
+        $todo=Todo::find($id);
+        $todo->completed=1;
+        $todo->save();
+
+        
+        Session::flash('success','your todo was mark as completed');
+
+        return redirect('/todos');
+    }
+}
+
